@@ -1,0 +1,12 @@
+# [Category A] Worker name and entry point configuration
+name = "tg-memos-worker"
+main = "src/index.js"
+compatibility_date = "2023-10-30"
+
+# [Category C] WARNING: Do NOT hardcode secrets (tokens) here. 
+# They will be injected via GitHub Actions during deployment.
+
+# [Category B] KV Namespace Binding: Used for stateless session management
+[[kv_namespaces]]
+binding = "MEMOS_KV"
+id = "58dc34b2c70c46779cf7dff1cb370ad3"
