@@ -120,9 +120,8 @@ async function sendInlineKeyboard(env, chatId, sessionId) {
     text: "📦 资源已暂存，请选择同步模式：",
     reply_markup: {
       inline_keyboard: [[
-        // [Category A] Hotfix: 互换了底层分发路由的 Payload，以修正反向问题
-        { text: "🌟 公开同步 (Public)", callback_data: `vis|PRIVATE|${sessionId}` },
-        { text: "🔒 私有存档 (Private)", callback_data: `vis|PUBLIC|${sessionId}` }
+        { text: "🌟 公开同步 (Public)", callback_data: `vis|PUBLIC|${sessionId}` },
+        { text: "🔒 私有存档 (Private)", callback_data: `vis|PRIVATE|${sessionId}` }
       ]]
     }
   };
