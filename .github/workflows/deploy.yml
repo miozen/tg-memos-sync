@@ -1,3 +1,4 @@
+# [Category B] CI/CD Pipeline Definition: Handles automated deployment to Cloudflare
 name: Deploy Worker
 on:
   push:
@@ -7,12 +8,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # [Category A] Upgrade checkout action to v4 for Node.js compatibility
+      - uses: actions/checkout@v4 
+      
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          # [Category B] Secret mapping: Injects GitHub secrets into Worker environment
           secrets: |
             TELEGRAM_TOKEN
             MEMOS_TOKEN
