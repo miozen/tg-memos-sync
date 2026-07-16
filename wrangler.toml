@@ -1,6 +1,7 @@
 name = "tg-memos-worker"
 main = "src/index.js"
 compatibility_date = "2026-07-01"
+keep_vars = true
 
 [[d1_databases]]
 binding = "DB"

@@ -53,9 +53,9 @@ npx wrangler d1 migrations apply tg-memos-sync --remote
 - `TELEGRAM_WEBHOOK_SECRET`
 - `ADMIN_HEALTH_SECRET`
 
-### 5. GitHub Actions Variables
+### 5. Cloudflare Worker 普通变量
 
-以下值不包含凭据，可以使用可查看的 Repository Variable：
+在 Worker 的 Settings > Variables and Secrets 中把以下值设置为可查看的普通文本变量：
 
 - `MEMOS_BASE_URL`
 - `CHANNEL_ID_PUBLIC`
@@ -63,6 +63,7 @@ npx wrangler d1 migrations apply tg-memos-sync --remote
 - `ALLOWED_USER_IDS`（多个 Telegram 用户 ID 用逗号分隔）
 
 不要把 Telegram Token、Memos Token 或 webhook secret 改为普通变量。
+`wrangler.toml` 已启用 `keep_vars = true`，后续部署会保留控制台中设置的普通变量。
 
 ### 6. 设置 Telegram webhook
 

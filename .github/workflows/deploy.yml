@@ -52,8 +52,3 @@ jobs:
           SECRET_PATH: ${{ secrets.SECRET_PATH }}
           TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
           ADMIN_HEALTH_SECRET: ${{ secrets.ADMIN_HEALTH_SECRET }}
-          MEMOS_BASE_URL: ${{ vars.MEMOS_BASE_URL }}
-          CHANNEL_ID_PUBLIC: ${{ vars.CHANNEL_ID_PUBLIC }}
-          CHANNEL_ID_PRIVATE: ${{ vars.CHANNEL_ID_PRIVATE }}
-          ALLOWED_USER_IDS: ${{ vars.ALLOWED_USER_IDS }}
-          DEPLOY_VERSION: ${{ github.sha }}
