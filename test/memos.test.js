@@ -47,10 +47,7 @@ test("uploads Telegram images through the Memos attachments API", async (t) => {
 
   const memoCall = calls.find((call) => call.url.endsWith("/api/v1/memos"));
   const memoBody = JSON.parse(memoCall.options.body);
-  assert.equal(
-    memoBody.content,
-    "image note\n\n![image](https://memos.example.com/file/attachments/abc/tg_image.jpg)"
-  );
+  assert.equal(memoBody.content, "image note");
   assert.equal(memoBody.attachments[0].name, "attachments/abc");
   assert.equal("resources" in memoBody, false);
 });
@@ -93,8 +90,7 @@ test("preserves a valid image MIME type returned by Telegram", async (t) => {
   assert.equal(JSON.parse(attachmentCall.options.body).type, "image/webp");
 
   const memoCall = calls.find((call) => call.url.endsWith("/api/v1/memos"));
-  assert.equal(
-    JSON.parse(memoCall.options.body).content,
-    "![image](https://memos.example.com/file/attachments/webp/tg_image.jpg)"
-  );
+  const memoBody = JSON.parse(memoCall.options.body);
+  assert.equal(memoBody.content, "");
+  assert.equal(memoBody.attachments.length, 1);
 });
