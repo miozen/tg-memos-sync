@@ -47,17 +47,11 @@ async function uploadAttachment(env, fileId) {
 export async function createMemo(env, content, visibility, fileIds) {
   const attachments = [];
   for (const fileId of fileIds) attachments.push(await uploadAttachment(env, fileId));
-  const baseUrl = env.MEMOS_BASE_URL.replace(/\/$/, "");
-  const imageMarkdown = attachments.map((attachment) => {
-    const filename = encodeURIComponent(attachment.filename || "tg_image.jpg");
-    return `![image](${baseUrl}/file/${attachment.name}/${filename})`;
-  });
-  const memoContent = [content.trim(), ...imageMarkdown].filter(Boolean).join("\n\n");
   return memosRequest(env, "/api/v1/memos", {
     method: "POST",
     headers: { Authorization: `Bearer ${env.MEMOS_TOKEN}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      content: memoContent,
+      content: content.trim(),
       visibility,
       attachments
     })
