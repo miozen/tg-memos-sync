@@ -13,29 +13,46 @@ async function memosRequest(env, path, options) {
   catch { throw new ApiError("Memos", response.status, "响应不是有效 JSON", false); }
 }
 
-async function uploadResource(env, fileId) {
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+  }
+  return btoa(binary);
+}
+
+async function uploadAttachment(env, fileId) {
   const imageResponse = await getTelegramFile(env, fileId);
-  const blob = await imageResponse.blob();
-  const form = new FormData();
-  form.append("file", blob, "tg_image.jpg");
-  const resource = await memosRequest(env, "/api/v1/resources", {
-    method: "POST", headers: { Authorization: `Bearer ${env.MEMOS_TOKEN}` }, body: form
+  const contentType = imageResponse.headers.get("Content-Type") || "image/jpeg";
+  const content = arrayBufferToBase64(await imageResponse.arrayBuffer());
+  const attachment = await memosRequest(env, "/api/v1/attachments", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.MEMOS_TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      filename: "tg_image.jpg",
+      type: contentType,
+      content
+    })
   });
-  if (!resource?.name) throw new ApiError("Memos", 200, "资源响应缺少 name", false);
-  return resource.name;
+  if (!attachment?.name) throw new ApiError("Memos", 200, "附件响应缺少 name", false);
+  return attachment;
 }
 
 export async function createMemo(env, content, visibility, fileIds) {
-  const resourceNames = [];
-  for (const fileId of fileIds) resourceNames.push(await uploadResource(env, fileId));
-  const imageMarkdown = resourceNames.map((name) => `![image](${env.MEMOS_BASE_URL.replace(/\/$/, "")}/file/${name}/image.jpg)`).join("\n");
+  const attachments = [];
+  for (const fileId of fileIds) attachments.push(await uploadAttachment(env, fileId));
   return memosRequest(env, "/api/v1/memos", {
     method: "POST",
     headers: { Authorization: `Bearer ${env.MEMOS_TOKEN}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      content: [content, imageMarkdown].filter(Boolean).join("\n\n").trim(),
+      content: content.trim(),
       visibility,
-      resources: resourceNames.map((name) => ({ name }))
+      attachments
     })
   });
 }
