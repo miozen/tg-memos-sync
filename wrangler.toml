@@ -1,12 +1,24 @@
-# [Category A] Worker name and entry point configuration
 name = "tg-memos-worker"
 main = "src/index.js"
-compatibility_date = "2023-10-30"
+compatibility_date = "2026-07-01"
+keep_vars = true
 
-# [Category C] WARNING: Do NOT hardcode secrets (tokens) here. 
-# They will be injected via GitHub Actions during deployment.
+[[d1_databases]]
+binding = "DB"
+database_name = "tg-memos-sync"
+database_id = "8704340c-ec92-413d-bd26-8ae5be55476d"
+migrations_dir = "migrations"
 
-# [Category B] KV Namespace Binding: Used for stateless session management
+[[queues.producers]]
+binding = "SYNC_QUEUE"
+queue = "tg-memos-sync"
+
+[[queues.consumers]]
+queue = "tg-memos-sync"
+max_batch_size = 5
+max_batch_timeout = 5
+max_retries = 3
+
 [[kv_namespaces]]
 binding = "MEMOS_KV"
 id = "58dc34b2c70c46779cf7dff1cb370ad3"
