@@ -6,7 +6,7 @@ keep_vars = true
 [[d1_databases]]
 binding = "DB"
 database_name = "tg-memos-sync"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "8704340c-ec92-413d-bd26-8ae5be55476d"
 migrations_dir = "migrations"
 
 [[queues.producers]]
