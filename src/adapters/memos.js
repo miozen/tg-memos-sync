@@ -25,7 +25,8 @@ function arrayBufferToBase64(buffer) {
 
 async function uploadAttachment(env, fileId) {
   const imageResponse = await getTelegramFile(env, fileId);
-  const contentType = imageResponse.headers.get("Content-Type") || "image/jpeg";
+  const responseType = imageResponse.headers.get("Content-Type") || "";
+  const imageType = responseType.toLowerCase().startsWith("image/") ? responseType : "image/jpeg";
   const content = arrayBufferToBase64(await imageResponse.arrayBuffer());
   const attachment = await memosRequest(env, "/api/v1/attachments", {
     method: "POST",
@@ -35,7 +36,7 @@ async function uploadAttachment(env, fileId) {
     },
     body: JSON.stringify({
       filename: "tg_image.jpg",
-      type: contentType,
+      type: imageType,
       content
     })
   });
@@ -46,11 +47,17 @@ async function uploadAttachment(env, fileId) {
 export async function createMemo(env, content, visibility, fileIds) {
   const attachments = [];
   for (const fileId of fileIds) attachments.push(await uploadAttachment(env, fileId));
+  const baseUrl = env.MEMOS_BASE_URL.replace(/\/$/, "");
+  const imageMarkdown = attachments.map((attachment) => {
+    const filename = encodeURIComponent(attachment.filename || "tg_image.jpg");
+    return `![image](${baseUrl}/file/${attachment.name}/${filename})`;
+  });
+  const memoContent = [content.trim(), ...imageMarkdown].filter(Boolean).join("\n\n");
   return memosRequest(env, "/api/v1/memos", {
     method: "POST",
     headers: { Authorization: `Bearer ${env.MEMOS_TOKEN}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      content: content.trim(),
+      content: memoContent,
       visibility,
       attachments
     })
